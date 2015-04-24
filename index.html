@@ -121,9 +121,19 @@
 	</code></pre>
 
 	<h2 id="section4">Easy! Now let's map our own data!</h2>
+	<p>Sometimes base tiles are all you need, but usually your web map will show some specific data besides general reference features. Generally these data will be displayed as vector features, in contrast to the raster base map. Vector features come in three varieties:
+		<ul>
+			<li>Points (e.g., the locations of restaurants)</li>
+			<li>Lines (e.g., jeepney routes)</li>
+			<li>Polygons (e.g., building footprints)</li>
+		</ul>
+	</p>
+	<p>UP Diliman just recently concluded its student council elections so we're going to make an election #precinctmap for this example. Below is a map of the election precincts for UP Diliman</p>	
 
 	<div id="map2" class="map"></div>
 	<a class="standalone" href="http://bl.ocks.org/awoodruff/1dc36a658a2e24e01b12" target="_blank"></a>
+
+	<p>Precincts everywhere! The data come from the official list of precincts. We have geocoded the places in the list and saved the locations as GeoJSON ahead of time using <a href="http://geojson.io">geojson.io</a>. GeoJSON is the de facto standard data type for web maps, and Leaflet has built-in methods to make it easy to map GeoJSON data. For more about GeoJSON, start with <a href="http://en.wikipedia.org/wiki/GeoJSON" target="_blank">its Wikipedia article</a>.</p>
 
 	<pre><code class="language-markup">
 &lt;html&gt;
@@ -163,9 +173,22 @@
 &lt;/body&gt;
 &lt;/html&gt;
 	</code></pre>
+<p>Okay, so what's new here? We've added a couple of files but only a few more lines of code for the #precinctmap.
+	<ol>
+		<li>We have two additional files: <a href="http://code.jquery.com/jquery-2.1.1.min.js" target="_blank">jQuery</a>, a super common and super useful JavaScript library, and our <a href="precincts.geojson" target="blank">precinct GeoJSON</a> file. If you're following along, download both and place them in the same directory as your HTML file.</li>
+		<li>Near the top, we've loaded the jQuery script into the document. jQuery makes it easy to manipulate a web page by finding elements on the page, setting their styles and properties, handling interaction events, and more. Learn more at <a href="http://jquery.com/" target="_blank">jquery.com</a>. Right now we're going to use one of its helper methods to load our external GeoJSON file.</li>
+		<li>After adding the base layer (we don't need the extra layer from the previous example), we use jQuery's <a href="http://api.jquery.com/jquery.getjson/" target="_blank"><code>getJSON()</code></a> method to load the rodent file. We pass this method two things: 1) the path to the rodent file, which in this case is just the file name because it's in the same directory, and 2) a function that will run once the file has been loaded and parsed. The <code>data</code> argument in that function represents the JSON data that jQuery reads from our external file.</li>
+		<li>Inside that function, we use <a href="http://leafletjs.com/reference.html#geojson" target="_blank"><code>L.geoJson()</code></a> to create a vector layer from GeoJSON, passing it the same <code>data</code>, and again using <code>addTo()</code> to put the layer on the map.</li>
+	</ol>
+</p>
+<p>Phew. There were some new pieces to understand here, but the code remains very simple. jQuery is one of several ways to load GeoJSON data. For other options, see <a href="http://lyzidiamond.com/posts/osgeo-august-meeting/" target="_blank">this post</a> and <a href="http://lyzidiamond.com/posts/external-geojson-and-leaflet-the-other-way/" target="_blank">this one</a> from Lyzi Diamond. We're only going to focus on GeoJSON in this tutorial, but check out <a href="https://github.com/mapbox/leaflet-omnivore" target="_blank">Leaflet Omnivore</a> by Tom MacWright for a plugin that makes it easy to load various data types. Need to convert your data to GeoJSON? Try some of these options: <a href="http://www.qgis.org/en/site/" target="_blank">QGIS</a>, <a href="http://ogre.adc4gis.com/" target="_blank">OGRE</a>, <a href="http://shpescape.com/" target="_blank">Shape Escape</a>, <a href="http://www.mapshaper.org/" target="_blank">mapshaper</a>, <a href="http://geojson.io" target="_blank">geojson.io</a>.</p>
+
+
+
 
 <h2 id="section5">Add some style</h2>
 
+<p>Our precincts showed up as default blue markers in the map above. But, although the markers aren't ugly, defaults are <a href="http://uxblog.idvsolutions.com/2013/10/20-unrequested-map-tips-part-1.html" target="_blank">rarely a good idea</a>. Besides, this is a #precinctmap, so let's see some precincts!</p>
 
 <div id="map3" class="map"></div>
 <a class="standalone" href="http://bl.ocks.org/awoodruff/803c310c871b3b5cc199" target="_blank"></a>
@@ -184,7 +207,28 @@ $.getJSON("precincts.geojson",function(data){
 });
 </code></pre>
 
+<p>Leaflet is flexible and smart. As we saw in the previous example, it will draw maps just fine by default, but here we've specified some options to override a default. There are two main additions:
+	<ol>
+		<li>We have used <a href="http://leafletjs.com/reference.html#icon" target="_blank"><code>L.icon()</code></a> to define the icon we're going to use for the rodent points. We have given it an object with a couple of options. Many options are available, but we just need two for now.
+			<ul>
+				<li><code>iconUrl</code> is the path to the image file, in this case <a href="precinct.png" target="_blank">precinct.png</a> (designed by <a href="https://www.mapbox.com/maki/" target="_blank">Mapbox</a>) which sits in the same directory as the HTML page.</li>
+				<li><code>iconSize</code> is a two-number array of the pixel width and height of the icon. Leaflet needs to know the size in order to position the icon properly. This property could be used to scale the images, but here we are just using the actual pixel dimension of the PNG.</li>
+			</ul>
+		</li>
+		<li>In addition to the GeoJSON data, <code>L.geoJson</code> has been passed an options object. We have given it just one option, a <a href="http://leafletjs.com/reference.html#geojson-pointtolayer" target="_blank"><code>pointToLayer</code></a> function. When <code>pointToLayer</code> is defined, Leaflet uses it to determine how to convert a point feature into a map layer. <code>pointToLayer</code> always accepts two arguments: the GeoJSON feature, and a <a href="http://leafletjs.com/reference.html#latlng" target="_blank"><code>LatLng</code></a> object representing its location. (We don't need to figure these out; Leaflet will automatically pass them to the function.) <code>pointToLayer</code> needs to return some kind of Leaflet layer. We'll cover several layer types later, but right now we're using a Marker, which is also what the default blue symbols are. Our function returns <a href="http://leafletjs.com/reference.html#marker" target="_blank"><code>L.marker()</code></a> to create a new Marker, which is passed:
+			<ul>
+				<li>The latlng that was sent to <code>pointToLayer</code> behind the scenes. This is the location of the point feature.</li>
+				<li>An options object with <code>icon</code> defined as the <code>precinctIcon</code> object we created in the previous step.</li>
+			</ul>
+		</li>
+	</ol>
+</p>
+
+
 <h2 id="section6">Interaction</h2>
+
+<p>The true power of web maps is in interaction, and not just panning and zooming. Let's make the #precinctmap a bit more useful by adding popups showing the code for each precinct. Click on the precinct icons below to see that information.</p>
+
 <div id="map4" class="map"></div>
 <a class="standalone" href="http://bl.ocks.org/awoodruff/2488ee1fdf0cf063904e" target="_blank"></a>
 <pre><code class="language-javascript">
@@ -195,8 +239,17 @@ pointToLayer: function(feature,latlng){
 }
 </code></pre>
 
+<p>Piece of cake. Before returning the Marker in pointToLayer, we just need to use the <a href="http://leafletjs.com/reference.html#marker-bindpopup" target="_blank"><code>bindPopup()</code></a> method to enable the popup on click. <code>bindPopup()</code> only needs to be given the content that is to appear in the popup. In this case, we pass it an HTML string: the Location and OPEN_DT properties from the GeoJSON feature, and a line break im between. Leaflet handles the interaction and everything else. Like most Leaflet objects, though, we could customize the popup if we wanted to.</p>
+
+
 <h2 id="section7">Polygons</h2>
+
+<p>Great. We've got a functional #precinctmap now. Let's open the door to more advanced mapping techniques by moving beyond point data. Here's a map with UP Diliman building polygons underneath our precincts.</p>
+
 <div id="map5" class="map"></div>
+
+<p>These polygons were loaded from another GeoJSON file with minimal effort. By default, Leaflet renders polygon and line data as <a href="https://developer.mozilla.org/en-US/docs/Web/SVG" target="_blank">SVG</a> (Scalable Vector Graphics) paths, making interaction and styling easy. We'll get to that in a moment (that blue doesn't look great!), but first the simple code to load this layer.</p>
+
 <pre><code class="language-javascript">
  OOO $.getJSON("buildings.geojson",function(buildingData){
   L.geoJson( buildingData ).addTo(map);
@@ -216,8 +269,12 @@ $.getJSON("precincts.geojson",function(data){
   }).addTo(map);
 });
 </code></pre>
+<p>Polygon and line GeoJSON data is added in the same basic way as points. (In fact, all three could be loaded from a single GeoJSON file.) We just repeat the step from a few examples back, using <a href="neighborhoods.geojson" target="_blank">neighborhoods.geojson</a> this time.</p>
+<p>Savvy coders at this point may notice that the two asynchronous <code>$.getJSON</code> requests are not guaranteed to finish in the order that the layers need to be stacked. That is, we don't want precincts drawing first, underneath the neighborhoods. Don't worry, and remember that Leaflet is clever. If you dig into your web inspector, you will find that the map consists of several <a href="http://leafletjs.com/reference.html#map-panes" target="_blank">panes</a>. SVG paths, such as our buildings, will always be drawn in the <em>overlay</em> pane, which is beneath the <em>marker</em> pane into which things like our precinct markers were drawn. Thus it doesn't matter which of our two layers draws first; they will both be drawn in the right place. (If we had multiple polygon or point layers, however, we would need to be more careful.)</p>
+
 
 <h2 id="section8">Thematic styles</h2>
+<p>Okay. Let's do something about that default blue. Let's make these polygons useful by turning them into a choropleth layer. The buildings GeoJSON file contains information about the building like its name and id.</p>
 
 <div id="map6" class="map"></div>
 <a class="standalone" href="http://bl.ocks.org/awoodruff/3ce5d735126a56dfff94" target="_blank"></a>
@@ -237,8 +294,19 @@ $.getJSON("buildings.geojson",function(buildingData){
   } CCC ).addTo(map);
 });
 </code></pre>
+<p>At this point we begin to see the power of combining built-in Leaflet features with our own code and logic. Leaflet provides convenient methods of styling those polygons, but it's up to us to figure out what styles to use. The code above creates a simple data classification and assigns green to buildings that are classified as school buildings and black otherwise.
+<ol>
+	<li>Following the pattern of several previous steps, we now pass an options object to the neighborhoods GeoJSON layer. The two options we'll provide are the two functions described below.</li>
+	<li>First, a <a href="http://leafletjs.com/reference.html#geojson-style" target="_blank"><code>style</code></a> function. When this is defined, Leaflet uses it to determine what style to apply to each polygon based on the GeoJSON feature data. The function takes one argument, which is that <code>feature</code>. It needs to return an object with any <a href="http://leafletjs.com/reference.html#path" target="_blank">path styles</a> that we want to override defaults. The function here uses a series of <code>if ... else</code> statements to find where the neighborhood's density property falls within a pre-defined classification, and assigns a fill color accordingly. It then returns an object with that fill color and several other styles defined. When Leaflet adds features in this layer to the map, it will run each of them through this style function and apply the results.</li>
+	<li><a href="http://leafletjs.com/reference.html#geojson-oneachfeature" target="_blank"><code>onEachFeature</code></a> is a more general-purpose function that Leaflet will invoke for each feature as it is added to the map. It takes two arguments: the GeoJSON <code>feature</code>, and the actual map <code>layer</code> (the polygon, in this case). Here we use it to bind a popup to each polygon, much like what we did for the precincts layer. However, for the precincts we could do this in the <code>pointToLayer</code> function, which we were already using to make custom markers. <code>pointToLayer</code> only applies to point features and thus is not available to this polygon layer. <code>onEachFeature</code> is used instead for popups (among other things).</li>
+	<li>Combining <code>style</code> with <code>onEachFeature</code> accomplishes something similar to what <code>pointToLayer</code> did for the precincts. <code>style</code> provides some instructions for how to turn the GeoJSON feature into a map layer, and <code>onEachFeature</code> provides some instructions for what to do with that layer.</li>
+</ol>
+</p>
+
 
 <h2 id="section9">Plug in and thin out</h2>
+
+<p>The beauty of Leaflet being open source—and of the particular way it's written—is that it's functionality and features can be extended and customized to your heart's content. There's a whole slew of <a href="http://leafletjs.com/plugins.html" target="_blank">plugins</a> people have written to extend the Leaflet core, most of them very easy to drop right into your project. We'll use a popular one, <a href="https://github.com/Leaflet/Leaflet.markercluster" target="_blank">Leaflet.markercluster</a>. A map cluttered with precinct symbols isn't great, and this plugin will help make it more readable and usable. Poke around on the map below.</p>
 
 <div id="map7" class="map"></div>
 <a class="standalone" href="http://bl.ocks.org/awoodruff/5de3553bb1f1b0c5f90d" target="_blank"></a>
@@ -270,6 +338,16 @@ map.addLayer(clusters); CCC
 
 &lt;/script&gt;
 </code></pre>
+<p>Look at all that added functionality from just a few lines of code! The plugin takes care of figuring out clusters, displaying them, and breaking them apart as you zoom in. (This is just the simplest implementation; there are <a href="https://github.com/Leaflet/Leaflet.markercluster#all-options" taret="_blank">many options</a> you can explore.)
+	<ol>
+		<li>The first thing we have to do is add the CSS and JavaScript sources for the Marker Cluster library, available from the <a href="https://github.com/Leaflet/Leaflet.markercluster/tree/master/dist" target="_blank">dist</a> folder of the plugin repository.</li>
+		<li>In the code, we assign that GeoJSON layer to a <code>precincts</code> variable instead of immediately adding it to the map. Its options remain the same, but we need to save it to a variable in order to use it later.</li>
+		<li>Next we create a marker cluster layer with <a href="https://github.com/Leaflet/Leaflet.markercluster#usage" target="_blank"><code>L.markerClusterGroup()</code></a>, a function that is part of the plugin, and assign it to a <code>clusters</code> variable.</li>
+		<li>The cluster layer is a group to which we can add individual markers which will then be clustered. Conveniently, we can also just add the entire precincts layer (which is a collection of markers) at once.</li>
+		<li>Finally, we add the cluster layer to the map, and magically our precincts are organized into smaller precinct clusters.</li>
+	</ol>
+</p>
+
 
 <h2>Go forth</h2>
 
