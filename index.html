@@ -108,7 +108,7 @@
   var map = L.map('map').setView([14.654343736166062,  121.0664176940918], 16);
 
   // load a tile layer
-  L.tileLayer('http://{s}.tiles.mapbox.com/v3/openplans.map-g4j0dszr/{z}/{x}/{y}.png',
+  L.tileLayer('http://{s}.tiles.mapbox.com/v3/rukku.map-ynzkstd9/{z}/{x}/{y}.png',
     {
       attribution: 'Tiles by &lt;a href="http://mapbox.com"&gt;DevelopmentSeed&lt;/a&gt;, Data by &lt;a href="http://openstreetmap.org"&gt;OpenStreetMap Contributors&lt;/a&gt;',
       maxZoom: 17,
@@ -156,7 +156,7 @@
   var map = L.map('map').setView([14.654343736166062,  121.0664176940918], 16);
 
   // load a tile layer
-  L.tileLayer('http://{s}.tiles.mapbox.com/v3/openplans.map-g4j0dszr/{z}/{x}/{y}.png',
+  L.tileLayer('http://{s}.tiles.mapbox.com/v3/rukku.map-ynzkstd9/{z}/{x}/{y}.png',
     {
       attribution: 'Tiles by &lt;a href="http://mapc.org"&gt;MAPC&lt;/a&gt;, Data by &lt;a href="http://mass.gov/mgis"&gt;MassGIS&lt;/a&gt;',
       maxZoom: 17,
@@ -387,7 +387,7 @@ for ( var i=0; i<mapDivs.length; i++ ){
 
 function initializeMap(id){
 	var map = L.map(id, {scrollWheelZoom: false}).setView([14.654343736166062,  121.0664176940918], 16);
-	L.tileLayer('http://{s}.tiles.mapbox.com/v3/openplans.map-g4j0dszr/{z}/{x}/{y}.png', {
+	L.tileLayer('http://{s}.tiles.mapbox.com/v3/rukku.map-ynzkstd9/{z}/{x}/{y}.png', {
 	    attribution: 'Map tiles &copy; Development Seed and Data from <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,',
 	    maxZoom: 17,
 	    minZoom: 9
@@ -397,7 +397,7 @@ function initializeMap(id){
 	// specific code for each map
 	switch (id){
 		case "map1":
-		L.tileLayer('http://{s}.tiles.mapbox.com/v3/openplans.map-g4j0dszr/{z}/{x}/{y}.png', {
+		L.tileLayer('http://{s}.tiles.mapbox.com/v3/rukku.map-ynzkstd9/{z}/{x}/{y}.png', {
 		    maxZoom: 17,
 		    minZoom: 9
 		}).addTo(map);
